@@ -1,0 +1,75 @@
+# CMPE 283 ASSIGNMENT 1
+
+##TEAM MEMBERS:
+Sai Swarup Rath(014655446)
+Veena Mamidi(015226198)
+
+
+##Questions and Responses:
+### 1. For each member in your team, provide 1 paragraph detailing what parts of the lab that member
+implemented / researched.
+
+### Sai Swarup Rath:
+Made half of the code changes for the .c file. Added extra comment and reference information with the code.
+Researched on the errors faced and explored steps on resolving those errors. Accessed the SDM to get details for controls
+details other than for pinbased(such as procbased, entry, exit etc.)
+
+### Veena M:
+Made half of the code changes for the .c file. Cloned git repo, tried building kernel with initial memory which failed. Redesigned the VM
+with more storage space and memory and inserted the module successfully in Ubuntu (VM Ware Workstation 15). Troubleshooted
+the different errors (solved by installing the required libraries like flex, libdev, msr-tools etc.). 
+
+
+### 2. Describe in detail the steps you used to complete the assignment. Consider your reader to be someone
+skilled in software development but otherwise unfamiliar with the assignment. Good answers to this
+question will be recipes that someone can follow to reproduce your development steps.
+
+The assignment focuses on the creation of a Linux kernel module to query various MSRs to determine
+the virtualization features present in CPU. The module will then report the features it discovers as
+system message log.
+
+###Prerequisites:
+• A machine capable of running Linux
+• Features for VMX virtualization exposed
+Step followed to complete the assignment-
+
+### 1. Install git
+- sudo apt-get install git
+
+### 2. Download the Linux kernel source code:
+- git clone https://github.com/torvalds/linux.git
+
+### 3. Build the Linux Kernel using the source code in previous step:
+- sudo apt-get install libncurses-dev
+- sudo apt-get install libssl-dev
+- make menuconfig
+- make
+- make modules
+
+
+### 4. Code a .c (C language) file that will be used to find the capabilities of the MSRs:
+-gedit cmpe283-1.c
+File content/code displayed in the appendix of this file.
+
+
+### 5. Creating new kernel module for MSRs:
+-gedit Makefile
+File contentobj-
+m += cmpe283-1.o
+all:
+make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+clean:
+make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+-make all
+
+### 6. Inserting/Loading the specific kernel module into the kernel:
+- insmod ./cmpe283-1.ko
+
+### 7. Verify the message buffer/output from the kernel in the system message log:
+- dmesg
+
+### 8. Commit the changes done to the local repository:
+- git add
+
+### 9. Creation of a diff file:
+- git diff HEAD~1 > cmpe283-1.diff
