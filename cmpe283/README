@@ -10,14 +10,16 @@ Veena Mamidi(015226198)
 implemented / researched.
 
 ### Sai Swarup Rath:
-Made half of the code changes for the .c file. Added extra comment and reference information with the code.
+Made half of the code changes for the .c file(Entry and Exit modules). Added extra comment and reference information with the code.
 Researched on the errors faced and explored steps on resolving those errors. Accessed the SDM to get details for controls
-details other than for pinbased(such as procbased, entry, exit etc.)
+details other than for pinbased(such as procbased, entry, exit etc.). Researched on finding resolutions for system issues
+such as ubuntu network manager problems, missing libraries etc.
 
 ### Veena M:
-Made half of the code changes for the .c file. Cloned git repo, tried building kernel with initial memory which failed. Redesigned the VM
+Made half of the code changes for the .c file(Procbased and Secondary Procbased). Cloned git repo, tried building kernel with initial memory which failed. Redesigned the VM
 with more storage space and memory and inserted the module successfully in Ubuntu (VM Ware Workstation 15). Troubleshooted
-the different errors (solved by installing the required libraries like flex, libdev, msr-tools etc.). 
+the different errors (solved by installing the required libraries like flex, libdev, msr-tools etc.). Implemented various libraries,
+used steps to resolve issues such as git commit and ubuntu network manager connectivity.
 
 
 ### 2. Describe in detail the steps you used to complete the assignment. Consider your reader to be someone
@@ -29,27 +31,38 @@ the virtualization features present in CPU. The module will then report the feat
 system message log.
 
 ###Prerequisites:
-• A machine capable of running Linux
+• A machine capable of running Linux with atleast 200GB space
 • Features for VMX virtualization exposed
-Step followed to complete the assignment-
 
+Step followed to complete the assignment-
+For our purposes we have used a windows laptop and used VMware workstation with Ubuntu.
 ### 1. Install git
 - sudo apt-get install git
+We first install git inside the ubuntu terminal. This is in-order to get the linux kernel source code for rest of the
+steps ahead.
 
 ### 2. Download the Linux kernel source code:
 - git clone https://github.com/torvalds/linux.git
+The linux kernel source code is then pulled using above command after forking the linux repo in our private github
+account.
 
 ### 3. Build the Linux Kernel using the source code in previous step:
-- sudo apt-get install libncurses-dev
+next the linux kernel is built using the source code pulled in previously. Some libraries which were missing were
+installed using commands such as sudo apt-get install libidev-dev.
+- sudo apt install libudev-dev
 - sudo apt-get install libssl-dev
 - make menuconfig
 - make
 - make modules
+- make modules_install
+- make install
 
 
 ### 4. Code a .c (C language) file that will be used to find the capabilities of the MSRs:
 -gedit cmpe283-1.c
-File content/code displayed in the appendix of this file.
+After successful build of kernel, we use the ".c" file provided and modify the code inside to get MSR capabilities
+details for entry, exit, procbased, secondary procbased and pinbased modules. We then add it inside kernel with
+above command.
 
 
 ### 5. Creating new kernel module for MSRs:
@@ -67,9 +80,28 @@ make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 
 ### 7. Verify the message buffer/output from the kernel in the system message log:
 - dmesg
+we used dmesg to get the system message log details as provided for various MSR capabality logs.
 
 ### 8. Commit the changes done to the local repository:
-- git add
+- git push
+After final output is received post reboot of system, we do a git push to move the makefile and cmpe283-1.c files
+to our github account.
 
-### 9. Creation of a diff file:
-- git diff HEAD~1 > cmpe283-1.diff
+
+##SOME ERRORS ENCOUNTERED DURING VARIOUS STEPS AND RESOLUTIONS:
+
+1)While running the command 'sudo make -j 4' for building the kernel received errors which required installation
+of various libraries. These were installed using "sudo apt get-install" and the errors were removed. Post removal of
+errors the command ran for around 4 hrs. Another error "stmmac_main.c:3570:1:error: the frame size of 1040 bytes
+is larger than 1024 bytes[-Werror=frame-larger-than=]" was encountered. We found out that it was a memory issue
+and then changed the memory by going to settings and allocating more space.
+
+2) The error "Failed to generate  BTF for vmlinux Try to disable CONFIG_DEBUG_INFO_BTF make: *** [MakeFile: 1165: vmlinux]
+ Error 1" was encountered. For this the dependency Dwarves was installed for resolution using command
+ "sudo apt-get install dwarves".
+
+3) During git push, an error "fatal:unable to access 'https://github.com/MamidiVeena/linux.git/': Could not resolve host
+:github.com" was encountered. It was observed that the network manager was not working inside the workstation. So we used
+command "sudo service network-manager restart" and then stopped and restarted the workstation again. Post this, the git push
+command started working and asked for username and password. Post providing the username and password the commit was
+successful and we found the updates made in the github account.
