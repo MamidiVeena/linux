@@ -229,7 +229,7 @@ void detect_vmx_features(void)
                rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
                pr_info("Secondary Procbased Controls MSR details fetched: 0x%llx\n",
                (uint64_t)(lo | (uint64_t)hi << 32));
-               report_capability(procbased_2, 21, lo, hi);
+               report_capability(procbased_2, 23, lo, hi);
         }
         pr_info("\n");
 
@@ -282,7 +282,7 @@ void detect_vmx_features(void)
                rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
                pr_info("Secondary Procbased Controls MSR details fetched are: 0x%llx\n",
               (uint64_t)(lo | (uint64_t)hi << 32));
-               report_capability(procbased_2, 21, lo, hi);
+               report_capability(procbased_2, 23, lo, hi);
         }
 
 
@@ -314,15 +314,9 @@ void detect_vmx_features(void)
 
 
 
-
-/*
- * init_module
- *
- * Module entry point
- *
- * Return Values:
- *  Always 0
- */
+// init_module
+// Return Values:
+//  Always 0
 int
 init_module(void)
 {
@@ -336,15 +330,12 @@ init_module(void)
 	return 0;
 }
 
-/*
- * cleanup_module
- *
- * Function called on module unload
- */
+
+// cleanup_module
+// Function called on module unload
 void
 cleanup_module(void)
 {
 	printk(KERN_INFO "CMPE 283 Assignment 1 Module Exits\n");
 }
-
 MODULE_LICENSE("GPL v2");
