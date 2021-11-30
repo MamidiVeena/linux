@@ -169,9 +169,7 @@ and then installed CPUID packages required in ubuntu using sudo apt-get install 
 ###Output and commands followed for final output
 First we modify the files and then run sudo make INSTALL_MOD_STRIP=1 modules install && make install. Post executing this command we then use rmmod kvm and rmmod kvm_intel. Then post running the user program file we get the required output:
 
-
-
-
+![img](https://github.com/MamidiVeena/linux/blob/master/cmpe283/Screen%20Shot%202021-11-29%20at%206.59.42%20PM.png)
 
 ##Challenges faced and resolution:
 1) After making the code changes at vmx.c and cpuid.c we faced couple of issues related to variables we used for incrementing exit values and fetching the correct output later using CPUID package installation and post creating nested vm in ubuntu system.
