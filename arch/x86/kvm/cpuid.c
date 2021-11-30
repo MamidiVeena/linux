@@ -32,10 +32,80 @@
 u32 kvm_cpu_caps[NR_KVM_CPU_CAPS] __read_mostly;
 EXPORT_SYMBOL_GPL(kvm_cpu_caps);
 
-atomic_t total_exits = ATOMIC_INIT(0);
-EXPORT_SYMBOL(total_exits);
-/*atomic64_t cpu_cycles = ATOMIC64_INIT(0);
-EXPORT_SYMBOL(cpu_cycles);*/
+
+
+//Assignment 3 changes 
+static char name_of_exits[69][100] = {
+	"EXCEPTION_NMI",
+	"EXCEPTION_INTERRUPT",
+	"TRIPLE_FAULT",
+	"INIT_SIGNAL_NA",
+	"STARTUP_IPI_NA",
+	"SMI_INTERRUPT_NA",
+	"EOI_INDUCED",
+	"PENDING_INTERRUPT",
+	"NMI_WINDOW",
+	"TASK_SWITCH",
+	"CPUID",
+	"GETSEC_NA",
+	"HLT",
+	"INVD",
+	"INVLPG",
+	"RDPMC",
+	"RDTSC_NA",
+	"RSM_NA",
+	"VMCALL",
+	"VMCLEAR",
+	"VMLAUNCH",
+	"VMPTRLD",
+	"VMPTRST",
+	"VMREAD",
+	"VMRESUME",
+	"VMWRITE",
+	"VMOFF",
+	"VMON",
+	"CR_ACCESS",
+	"DR_ACCESS",
+	"IO_INSTRUCTION",
+	"MSR_READ",
+	"MSR_WRITE",
+	"VM_ENTRY_FAILURE_INVALID_GUEST_NA",
+	"VM_ENTRY_FAILURE_MSR_LOADING_NA",
+	"INVALID_VALUE",
+	"MWAIT_INSTRUCTION",
+	"MONITOR_TRAP_FLAG",
+	"INVALID_VALUE",
+	"MONITOR_INSTRUCTION",
+	"PAUSE_INSTRUCTION",
+	"MCE_DURING_VMENTRY",
+	"INVALID_VALUE",
+	"TPR_BELOW_THRESHOLD",
+	"APIC_ACCESS",
+	"VIRTUALIZED_EOI_NA",
+	"GDTR_IDTR",
+	"LDTR_TR",
+	"EPT_VIOLATION",
+	"EPT_MISCONFIG",
+	"INVEPT",
+	"RDTSCP_NA",
+	"PREEMPTION_TIMER",
+	"INVVPID",
+	"WBINVD",
+	"XSETBV",
+	"APIC_WRITE",
+	"RDRAND",
+	"INVPCID",
+	"VMFUNC",
+	"ENCLS"
+	"RDSEED",
+	"PML_FULL",
+	"XSAVES_NA",
+	"XRESTORE_NA",
+	"INVALID_VALUE",
+	"SPP_RELATED_EVENT_NA",
+	"UM_WAIT_NA",
+	"TPAUSE_NA"
+};
 
 static u32 xstate_required_size(u64 xstate_bv, bool compacted)
 {
@@ -1233,39 +1303,101 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 			used_max_basic);
 	return exact;
 }
-
 EXPORT_SYMBOL_GPL(kvm_cpuid);
-atomic_t totalNoOfExits = ATOMIC_INIT(0);
+
 atomic64_t totalTimeTaken = ATOMIC_INIT(0);
+atomic_t exits = ATOMIC_INIT(0);
 
-
-EXPORT_SYMBOL(totalNoOfExits);
+EXPORT_SYMBOL(exits);
 EXPORT_SYMBOL(totalTimeTaken);
+
 
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
+	int i;
+	extern uint64_t freq_exit[69];
+	uint64_t cpu_exit_time[69];
+    uint64_t each_exit_time=0;
 
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
 
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
-	printk(KERN_INFO "logs");
+	
+	printk(KERN_INFO "kern info logs");
 	if (eax == 0x4fffffff){
-		eax = arch_atomic_read(&totalNoOfExits);
-		printk(KERN_INFO "Number of exits:%u",eax);
-
+		eax = arch_atomic_read(&exits);
+		printk(KERN_INFO "No of exits:%u",eax);
 	}
 
 	else if (eax == 0x4ffffffe){
 		printk (KERN_INFO "CPUID(0x4FFFFFFE), exit number =");
 		ebx = (atomic64_read(&totalTimeTaken) >> 32);
-		printk (KERN_INFO "Higher 32-bits-EBX %u",ebx);
+		printk (KERN_INFO "32-bits-EBX (Higher) %u",ebx);
 		ecx = (atomic64_read(&totalTimeTaken));
-		printk(KERN_INFO "Lower 32-bits-ECX %u",ecx);
+		printk(KERN_INFO "32-bits-ECX (Lower) %u",ecx);
 	}
+	else if(eax== 0x4fffffffd){
+	     
+	     kvm_cpuid(vcpu,&eax,&ebx,&ecx,&edx,true);
+	     printk(KERN_INFO "\Exit-No    Name_of_the_exit   Frequency _of_the _Exit ");
+	     
+	     for(i=0; i<69; i++){
+	     	if((strstr(name_of_exits[i], "INVALID_VALUE") == NULL) && (strstr(name_of_exits[i], "_NA") == NULL)){
+	     	printk(KERN_INFO "\t%u  %-30s %llu\n", i, name_of_exits[i],freq_exit[ecx]);
+	        }
+	     }
+	     if((int) ecx > -1 && (int)ecx < 69 && (strstr(name_of_exits[ecx],"_NA")==NULL) && (strstr(name_of_exits[ecx],"INVALID_VALUE")==NULL)){
+	     	eax = freq_exit[ecx];
+	     }
+	     else if((int) ecx > -1 && (int)ecx < 69 && (strstr(name_of_exits[ecx],"_NA")!=NULL)){
+			eax = 0x00000000;
+			ebx = 0x00000000;
+			ecx = 0x00000000;
+			edx = 0x00000000;
+	    } 
+	    else {
+			eax = 0x00000000;
+			ebx = 0x00000000;
+			ecx = 0x00000000;
+			edx = 0xFFFFFFFF; 
+	    }
+	}
+	else if(eax == 0x4FFFFFFC){
+		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);		
+		printk(KERN_INFO "\tExit_no   Exit_Name    Freq(CPU_exit_time)");
+		
+		for(i=0; i<69; i++){
+		     	if((strstr(name_of_exits[i], "INVALID_VALUE") == NULL) && (strstr(name_of_exits[i], "_NA") == NULL)){
+		     	printk(KERN_INFO "\t%u  %-30s %llu\n", i, name_of_exits[i],cpu_exit_time[i]);
+	        }
+	       }
+		 if((int) ecx > -1 && (int)ecx < 69 && (strstr(name_of_exits[ecx],"_NA")==NULL) && (strstr(name_of_exits[ecx],"INVALID_VALUE")==NULL)){
+			printk(KERN_INFO "CPU Cycles (total exit time) for : ECX val :%u\n",ecx);
+			printk(KERN_INFO "CPU Cycles (total exit time) for : name_of_exits[ecx] :%s\n",name_of_exits[ecx]);
+			printk(KERN_INFO "CPU Cycles (total exit time) for : cpu_exit_time[ecx] :%llu\n",cpu_exit_time[ecx]);
+			each_exit_time=cpu_exit_time[ecx];
 
+			ebx = (u32)(each_exit_time>>32); 
+			ecx = (u32)(each_exit_time&0xFFFFFFFF);
+
+		}
+		 else if((int) ecx > -1 && (int)ecx < 69 && (strstr(name_of_exits[ecx],"_NA")!=NULL)){
+			eax= 0x00000000;
+			ebx= 0x00000000;
+			ecx= 0x00000000;
+			edx= 0x00000000;
+		}
+		else{
+			eax= 0x00000000;
+			ebx= 0x00000000;
+			ecx= 0x00000000;
+			edx= 0xFFFFFFFF;
+		}
+
+	}
 	else{
 	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
 	}
@@ -1275,4 +1407,6 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	kvm_rdx_write(vcpu, edx);
 	return kvm_skip_emulated_instruction(vcpu);
 }
+
+
 EXPORT_SYMBOL_GPL(kvm_emulate_cpuid);
