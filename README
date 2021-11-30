@@ -192,8 +192,7 @@ For Assignment- 2, Code files were pushed to this location on time 'https://gith
 
 
 # CMPE 283 ASSIGNMENT 3
-
-Assignment 2: Instrumentation via hypercall
+Assignment 3: Instrumentation via hypercall
 
 
 ##TEAM MEMBERS:
@@ -226,6 +225,13 @@ Step 2: Build the new linux kernel module.
 Step 3 - We then build the KVM module only, and used the command: 
 
 sudo make -j 8 modules M=arch/x86/kvm
+sudo make INSTALL_MOD_STRIP=1 modules_install && make install
+lsmod | grep kvm
+
+rmmod kvm_intel
+rmmod kvm
+modprobe kvm
+modprobe kvm_intel
 
 step 4- we then removed older modules using rmmod kvm_intel and rmmod kvm
 
@@ -241,19 +247,23 @@ step6- after the innervm was rebooted we ensured that cupid is installed and the
 
 Q3. Comment on the frequency of exits – does the number of exits increase at a stable rate? Or are there more exits performed during certain VM operations? Approximately how many exits does a full VM boot entail?
 
-The frequency of exits  did not increase at a stable rate. During certain VM operations more exits are performed. For example in our system, for exit no. 7 the exits performed was the highest.. A full vm reboot in our system took approximately around 151,000 exits for 0x4FFFFFFF. This can be observed from the attached screenshot as well.
+The frequency of exits didn't increase at a stable rate. More exits were noticed when for few VM operations. Exits were performed highest when at exit 7. A full vm reboot in our system took approximately around 151,000 exits for 0x4FFFFFFF.
 
 
 Q4. Of the exit types defined in the SDM, which are the most frequent? Least?
 
-The most frequent were 
+Most frequent exit types are 
 
+#### Exit Number 12 - HLT
+#### Exit Number 1 - Exception Interrupt
 #### Exit Number 7 - Interrupt window
+#### Exit number 48 - EPT Violation
 
- least frequent were
+
+Least frequest exit types are
 
 #### Exit number 29 - MOV DR
-
+#### Exit number 55 - XSETBV
 
 
 
