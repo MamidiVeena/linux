@@ -184,3 +184,76 @@ For Assignment- 2, Code files were pushed to this location on time 'https://gith
 
 
 
+
+
+
+
+
+
+
+# CMPE 283 ASSIGNMENT 3
+
+Assignment 2: Instrumentation via hypercall
+
+
+##TEAM MEMBERS:
+Sai Swarup Rath(014655446)
+Veena Mamidi(015226198)
+
+
+##Questions and Responses:
+### 1. For each member in your team, provide 1 paragraph detailing what parts of the lab that member
+implemented / researched.
+
+
+### Sai Swarup Rath:
+For third assignment we built the homework based on assignment 2 setup and hence no additional configuartion was needed.
+Checked and understood where to put the code in vmx.c and cpuid.c files for assignment requirement such as For CPUID leaf node %eax=0x4FFFFFFD. Modified the code in vmx_handle_Exit function. Created a test file and discussed more to correct it. Also
+helped in completing documentation. Verified proper output for the instructions.
+
+### Veena M:
+Researched on the various requirements for leaf function. Modified the CPUID leaf function in kvm_emulate_cpuid in cpuid.c. Built code for CPUID leaf node %eax=0x4FFFFFFC:. Researched on errors received during running of vmx.c and cpuid.c files. Focused on various errors received while creating nested vm in ubuntu and steps to bypass those errors. Discussed on creating proper user mode program for running various CPUID functions. Verified proper output for the instructions.
+
+
+### 2. Describe in detail the steps you used to complete the assignment. Consider your reader to be someone
+skilled in software development but otherwise unfamiliar with the assignment. Good answers to this
+question will be recipes that someone can follow to reproduce your development steps.
+
+Steps Used to Complete The Assignment:		
+Prerequirement: System till assignment 2 setup complete
+Step 1: Ensure your system is ready to the point of setup till Assignment 1.
+Step 2: Build the new linux kernel module.
+Step 3 - We then build the KVM module only, and used the command: 
+
+sudo make -j 8 modules M=arch/x86/kvm
+
+step 4- we then removed older modules using rmmod kvm_intel and rmmod kvm
+
+step 5-Inserted new modules using 
+sudo insmod arch/x86/kvm/kvm.ko
+
+sudo insmod arch/x86/kvm/kvm-intel.ko
+
+
+step6- after the innervm was rebooted we ensured that cupid is installed and then ran the test script. We gave few exit numbers and checked if desired output is obtained or not.
+
+##### Questions:
+
+Q3. Comment on the frequency of exits – does the number of exits increase at a stable rate? Or are there more exits performed during certain VM operations? Approximately how many exits does a full VM boot entail?
+
+The frequency of exits  did not increase at a stable rate. During certain VM operations more exits are performed. For example in our system, for exit no. 7 the exits performed was the highest.. A full vm reboot in our system took approximately around 151,000 exits for 0x4FFFFFFF. This can be observed from the attached screenshot as well.
+
+
+Q4. Of the exit types defined in the SDM, which are the most frequent? Least?
+
+The most frequent were 
+
+#### Exit Number 7 - Interrupt window
+
+ least frequent were
+
+#### Exit number 29 - MOV DR
+
+
+
+
