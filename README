@@ -166,6 +166,13 @@ For installing CPUID Package we researched on this link https://packages.ubuntu.
 and then installed CPUID packages required in ubuntu using sudo apt-get install -y cpuid.
 
 
+###Output and commands followed for final output
+First we modify the files and then run sudo make INSTALL_MOD_STRIP=1 modules install && make install. Post executing this command we then use rmmod kvm and rmmod kvm_intel. Then post running the user program file we get the required output:
+
+
+
+
+
 ##Challenges faced and resolution:
 1) After making the code changes at vmx.c and cpuid.c we faced couple of issues related to variables we used for incrementing exit values and fetching the correct output later using CPUID package installation and post creating nested vm in ubuntu system.
 So double checked the changes we made and saw how in the assignment video the code was implemented in the two files. Based on that we devised the logic with proper variable assignment and in correct function places to resolve the issue.
