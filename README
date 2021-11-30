@@ -247,13 +247,12 @@ step6- after the innervm was rebooted we ensured that cupid is installed and the
 
 Q3. Comment on the frequency of exits – does the number of exits increase at a stable rate? Or are there more exits performed during certain VM operations? Approximately how many exits does a full VM boot entail?
 
-The frequency of exits didn't increase at a stable rate. More exits were noticed when for few VM operations. Exits were performed highest when at exit 7. A full vm reboot in our system took approximately around 151,000 exits for 0x4FFFFFFF.
+The frequency of exits didn't increase at a stable rate. More exits were noticed when performing few VM operations. Exits were performed highest when at exit 12. A full vm reboot in our system took approximately around 151,000 exits for 0x4FFFFFFF.
 
 
 Q4. Of the exit types defined in the SDM, which are the most frequent? Least?
 
 Most frequent exit types are 
-
 #### Exit Number 12 - HLT
 #### Exit Number 1 - Exception Interrupt
 #### Exit Number 7 - Interrupt window
@@ -261,7 +260,6 @@ Most frequent exit types are
 
 
 Least frequest exit types are
-
 #### Exit number 29 - MOV DR
 #### Exit number 55 - XSETBV
 
